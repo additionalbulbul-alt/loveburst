@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Show Some Love - Romantic Balloon App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'romantic-pink': '#FF69B4',
+                        'rose-gold': '#F7CAC9',
+                        'soft-red': '#FF6B6B',
+                        'lavender': '#E6E6FA',
+                        'peach': '#FFEBE9',
+                        'light-pink': '#FFF0F5',
+                        'deep-rose': '#8B4B6B'
+                    },
+                    fontFamily: {
+                        'dancing': ['Dancing Script', 'cursive'],
+                        'poppins': ['Poppins', 'sans-serif']
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'heart-float': 'heartFloat 4s ease-in-out infinite',
+                        'bounce-in': 'bounceIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55)',
+                        'pop-burst': 'popBurst 0.5s ease-out forwards',
+                        'message-appear': 'messageAppear 0.8s ease-out forwards'
+                    }
+                }
+            }
+        };
+    </script>
+    <style>
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(-2deg); }
+            50% { transform: translateY(-20px) rotate(2deg); }
+        }
+        
+        @keyframes heartFloat {
+            0% { transform: translateY(0px) scale(1) rotate(0deg); opacity: 0.8; }
+            50% { transform: translateY(-15px) scale(1.1) rotate(180deg); opacity: 1; }
+            100% { transform: translateY(0px) scale(1) rotate(360deg); opacity: 0.8; }
+        }
+        
+        @keyframes bounceIn {
+            0% { transform: scale(0.3) rotate(0deg); opacity: 0; }
+            50% { transform: scale(1.05) rotate(180deg); opacity: 0.8; }
+            100% { transform: scale(1) rotate(360deg); opacity: 1; }
+        }
+        
+        @keyframes popBurst {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.7; }
+            100% { transform: scale(3); opacity: 0; }
+        }
+        
+        @keyframes messageAppear {
+            0% { transform: scale(0.5) translateY(20px); opacity: 0; }
+            60% { transform: scale(1.05) translateY(-5px); opacity: 0.9; }
+            100% { transform: scale(1) translateY(0px); opacity: 1; }
+        }
+        
+        .balloon {
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        
+        .balloon:hover {
+            transform: scale(1.1) rotate(5deg);
+        }
+        
+        .heart-particle {
+            position: absolute;
+            color: #FF6B6B;
+            font-size: 20px;
+            pointer-events: none;
+        }
+        
+        .message-card {
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid rgba(255, 105, 180, 0.3);
+        }
+    </style>
+</head>
+<body class="min-h-screen overflow-hidden relative" style="background: linear-gradient(135deg, #FFEBE9 0%, #FFF0F5 50%, #E6E6FA 100%);">
+    
+    <!-- Background Hearts -->
+    <div class="fixed inset-0 pointer-events-none overflow-hidden">
+        <div class="absolute top-10 left-10 text-romantic-pink text-2xl animate-heart-float opacity-20">💖</div>
+        <div class="absolute top-32 right-20 text-soft-red text-lg animate-heart-float opacity-15" style="animation-delay: 1s;">💕</div>
+        <div class="absolute bottom-20 left-1/4 text-lavender text-xl animate-heart-float opacity-10" style="animation-delay: 2s;">💝</div>
+        <div class="absolute top-1/2 right-10 text-romantic-pink text-sm animate-heart-float opacity-25" style="animation-delay: 3s;">💗</div>
+        <div class="absolute bottom-32 right-1/3 text-soft-red text-2xl animate-heart-float opacity-15" style="animation-delay: 4s;">💖</div>
+    </div>
+    
+    <!-- Main Container -->
+    <div class="min-h-screen flex flex-col items-center justify-center p-4 relative z-10">
+        
+        <!-- Welcome Section -->
+        <div id="welcomeSection" class="text-center mb-8">
+            <h1 class="font-dancing text-6xl md:text-8xl text-deep-rose mb-4 drop-shadow-lg">
+                For My Love
+            </h1>
+            <p class="font-poppins text-lg md:text-xl text-deep-rose opacity-80 mb-8 max-w-md mx-auto leading-relaxed">
+                A little something special just for you. Click the button below to see the magic unfold! 💕
+            </p>
+            
+            <!-- Start Button -->
+            <button id="startButton" 
+                    class="bg-gradient-to-r from-romantic-pink to-soft-red hover:from-soft-red hover:to-romantic-pink text-white font-poppins font-semibold py-4 px-8 md:py-5 md:px-12 rounded-full text-lg md:text-xl shadow-2xl transform hover:scale-105 transition-all duration-300 relative overflow-hidden group">
+                <span class="relative z-10">Show Some Love</span>
+                <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-0 group-hover:opacity-20 transform -skew-x-12 group-hover:translate-x-full transition-all duration-700"></div>
+            </button>
+        </div>
+        
+        <!-- Instructions -->
+        <div id="instructions" class="hidden text-center mb-6">
+            <p class="font-poppins text-deep-rose text-lg opacity-90 animate-bounce-in">
+                Click on the balloons to pop them and reveal sweet messages! 💖
+            </p>
+        </div>
+    </div>
+    
+    <!-- Balloons Container -->
+    <div id="balloonsContainer" class="fixed inset-0 pointer-events-none z-20"></div>
+    
+    <!-- Message Modal -->
+    <div id="messageModal" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="message-card rounded-2xl p-6 md:p-8 max-w-md w-full mx-4 shadow-2xl animate-message-appear">
+            <div class="text-center">
+                <div class="text-4xl mb-4">💝</div>
+                <h3 class="font-dancing text-2xl md:text-3xl text-deep-rose mb-4" id="messageTitle">Sweet Message</h3>
+                <p class="font-poppins text-deep-rose text-base md:text-lg leading-relaxed mb-6" id="messageText"></p>
+                <button id="closeMessage" 
+                        class="bg-gradient-to-r from-romantic-pink to-soft-red text-white font-poppins py-2 px-6 rounded-full hover:shadow-lg transform hover:scale-105 transition-all duration-300">
+                    Close ✨
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // Sweet romantic messages
+            const messages = [
+                {
+                    title: "You're My Sunshine ☀️",
+                    text: "Every day with you feels like a beautiful adventure. Your smile brightens even my darkest days, and I'm so grateful to have you in my life."
+                },
+                {
+                    title: "Forever & Always 💕",
+                    text: "No matter where life takes us, my love for you only grows stronger. You're not just my partner, you're my best friend and my greatest blessing."
+                },
+                {
+                    title: "You Make Me Better 🌟",
+                    text: "With you by my side, I feel like I can conquer the world. You inspire me to be the best version of myself every single day."
+                },
+                {
+                    title: "My Heart is Yours 💖",
+                    text: "From the moment I met you, I knew you were special. You've filled my life with so much love, laughter, and joy that I never knew was possible."
+                },
+                {
+                    title: "Perfect Together 🥰",
+                    text: "We fit together like puzzle pieces, complementing each other perfectly. I love how we can be silly together and support each other through anything."
+                },
+                {
+                    title: "You're My Everything 💗",
+                    text: "In a world full of temporary things, you are my constant. Thank you for loving me unconditionally and for being my home."
+                }
+            ];
+
+            let balloonsCreated = 0;
+            let activeAnimations = [];
+
+            // Balloon colors and emojis
+            const balloonStyles = [
+                { color: '#FF69B4', emoji: '🎈' },
+                { color: '#FF6B6B', emoji: '🎈' },
+                { color: '#E6E6FA', emoji: '🎈' },
+                { color: '#F7CAC9', emoji: '🎈' },
+                { color: '#FFB6C1', emoji: '🎈' },
+                { color: '#DDA0DD', emoji: '🎈' }
+            ];
+
+            function createBalloon() {
+                const balloon = document.createElement('div');
+                const style = balloonStyles[Math.floor(Math.random() * balloonStyles.length)];
+                const message = messages[Math.floor(Math.random() * messages.length)];
+                
+                balloon.className = 'balloon absolute text-6xl md:text-8xl animate-float animate-bounce-in pointer-events-auto';
+                balloon.innerHTML = style.emoji;
+                balloon.style.color = style.color;
+                balloon.style.left = Math.random() * (window.innerWidth - 100) + 'px';
+                balloon.style.top = Math.random() * (window.innerHeight - 200) + 100 + 'px';
+                balloon.style.animationDelay = Math.random() * 2 + 's';
+                
+                // Store message data
+                balloon.dataset.messageTitle = message.title;
+                balloon.dataset.messageText = message.text;
+                
+                // Add click handler
+                balloon.addEventListener('click', function() {
+                    popBalloon(balloon);
+                });
+                
+                document.getElementById('balloonsContainer').appendChild(balloon);
+                balloonsCreated++;
+                
+                // Remove after animation if not clicked
+                setTimeout(() => {
+                    if (balloon.parentNode) {
+                        balloon.style.opacity = '0';
+                        balloon.style.transform = 'translateY(-100px) scale(0.5)';
+                        setTimeout(() => {
+                            if (balloon.parentNode) {
+                                balloon.parentNode.removeChild(balloon);
+                            }
+                        }, 500);
+                    }
+                }, 15000);
+            }
+
+            function createHeartParticles(x, y) {
+                const hearts = ['💖', '💕', '💗', '💝', '💘'];
+                
+                for (let i = 0; i < 8; i++) {
+                    const heart = document.createElement('div');
+                    heart.className = 'heart-particle';
+                    heart.innerHTML = hearts[Math.floor(Math.random() * hearts.length)];
+                    heart.style.left = x + 'px';
+                    heart.style.top = y + 'px';
+                    heart.style.fontSize = (Math.random() * 10 + 15) + 'px';
+                    
+                    document.body.appendChild(heart);
+                    
+                    // Animate heart
+                    const angle = (Math.PI * 2 * i) / 8;
+                    const distance = Math.random() * 100 + 50;
+                    const endX = x + Math.cos(angle) * distance;
+                    const endY = y + Math.sin(angle) * distance - Math.random() * 50;
+                    
+                    heart.animate([
+                        { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+                        { transform: `translate(${endX - x}px, ${endY - y}px) scale(0.2)`, opacity: 0 }
+                    ], {
+                        duration: 1500,
+                        easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+                    }).onfinish = () => {
+                        if (heart.parentNode) {
+                            heart.parentNode.removeChild(heart);
+                        }
+                    };
+                }
+            }
+
+            function popBalloon(balloon) {
+                const rect = balloon.getBoundingClientRect();
+                const x = rect.left + rect.width / 2;
+                const y = rect.top + rect.height / 2;
+                
+                // Create burst effect
+                balloon.style.animation = 'popBurst 0.5s ease-out forwards';
+                
+                // Create heart particles
+                createHeartParticles(x, y);
+                
+                // Show message
+                setTimeout(() => {
+                    showMessage(balloon.dataset.messageTitle, balloon.dataset.messageText);
+                    if (balloon.parentNode) {
+                        balloon.parentNode.removeChild(balloon);
+                    }
+                }, 250);
+            }
+
+            function showMessage(title, text) {
+                document.getElementById('messageTitle').textContent = title;
+                document.getElementById('messageText').textContent = text;
+                document.getElementById('messageModal').classList.remove('hidden');
+                document.getElementById('messageModal').classList.add('flex');
+            }
+
+            function startLoveAnimation() {
+                // Hide welcome section
+                const welcomeSection = document.getElementById('welcomeSection');
+                welcomeSection.style.transform = 'translateY(-50px)';
+                welcomeSection.style.opacity = '0';
+                
+                setTimeout(() => {
+                    welcomeSection.style.display = 'none';
+                    document.getElementById('instructions').classList.remove('hidden');
+                }, 500);
+                
+                // Create balloons periodically
+                const createBalloonsInterval = setInterval(() => {
+                    createBalloon();
+                    
+                    // Create hearts occasionally
+                    if (Math.random() > 0.7) {
+                        setTimeout(() => {
+                            createHeartParticles(
+                                Math.random() * window.innerWidth,
+                                Math.random() * window.innerHeight
+                            );
+                        }, Math.random() * 2000);
+                    }
+                }, 2000);
+                
+                // Stop creating balloons after 30 seconds
+                setTimeout(() => {
+                    clearInterval(createBalloonsInterval);
+                }, 30000);
+            }
+
+            // Event listeners
+            document.getElementById('startButton').addEventListener('click', startLoveAnimation);
+            
+            document.getElementById('closeMessage').addEventListener('click', function() {
+                document.getElementById('messageModal').classList.add('hidden');
+                document.getElementById('messageModal').classList.remove('flex');
+            });
+
+            // Close modal when clicking outside
+            document.getElementById('messageModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    document.getElementById('closeMessage').click();
+                }
+            });
+
+            // TODO: Implement Next.js component structure
+            // TODO: Add sound effects for balloon pops and heart animations
+            // TODO: Implement persistent storage for viewed messages
+            // TODO: Add more interactive elements and surprise animations
+        })();
+    </script>
+</body>
+</html>

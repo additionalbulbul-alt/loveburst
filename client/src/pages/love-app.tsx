@@ -55,12 +55,12 @@ const romanticMessages: Message[] = [
 ];
 
 const balloonStyles = [
-  { color: '#FF69B4', emoji: '🎈' },
-  { color: '#FF6B6B', emoji: '🎈' },
-  { color: '#E6E6FA', emoji: '🎈' },
-  { color: '#F7CAC9', emoji: '🎈' },
-  { color: '#FFB6C1', emoji: '🎈' },
-  { color: '#DDA0DD', emoji: '🎈' }
+  { color: '#FF69B4', emoji: '💗' },
+  { color: '#FF6B6B', emoji: '💗' },
+  { color: '#E6E6FA', emoji: '💗' },
+  { color: '#F7CAC9', emoji: '💗' },
+  { color: '#FFB6C1', emoji: '💗' },
+  { color: '#DDA0DD', emoji: '💗' }
 ];
 
 const heartEmojis = ['💖', '💕', '💗', '💝', '💘'];
@@ -73,28 +73,26 @@ export default function LoveApp() {
   const [heartParticles, setHeartParticles] = useState<HeartParticle[]>([]);
   const [balloonCounter, setBalloonCounter] = useState(0);
 
-  const createBalloon = useCallback(() => {
-    const style = balloonStyles[Math.floor(Math.random() * balloonStyles.length)];
-    const message = romanticMessages[Math.floor(Math.random() * romanticMessages.length)];
-    
-    const newBalloon: Balloon = {
-      id: `balloon-${Date.now()}-${Math.random()}`,
-      x: Math.random() * (window.innerWidth - 100),
-      y: Math.random() * (window.innerHeight - 200) + 100,
-      color: style.color,
-      emoji: style.emoji,
-      message,
-      animationDelay: Math.random() * 2
-    };
+const createBalloon = useCallback(() => {
+  const style = balloonStyles[Math.floor(Math.random() * balloonStyles.length)];
+  const message = romanticMessages[Math.floor(Math.random() * romanticMessages.length)];
+  
+  const newBalloon: Balloon = {
+    id: `balloon-${Date.now()}-${Math.random()}`,
+    x: Math.random() * (window.innerWidth - 100),
+    y: Math.random() * (window.innerHeight - 200) + 100,
+    color: style.color,
+    emoji: style.emoji,
+    message,
+    animationDelay: Math.random() * 2
+  };
 
-    setBalloons(prev => [...prev, newBalloon]);
-    setBalloonCounter(prev => prev + 1);
+  setBalloons(prev => [...prev, newBalloon]);
+  setBalloonCounter(prev => prev + 1);
 
-    // Remove balloon after 15 seconds if not clicked
-    setTimeout(() => {
-      setBalloons(prev => prev.filter(b => b.id !== newBalloon.id));
-    }, 15000);
-  }, []);
+  // ✅ Balloons now last forever until clicked
+}, []);
+
 
   const createHeartParticles = useCallback((x: number, y: number) => {
     const particles: HeartParticle[] = [];
@@ -260,7 +258,7 @@ export default function LoveApp() {
                 animate={{ y: [0, -5, 0] }}
                 transition={{ duration: 2, repeat: Infinity }}
               >
-                Click on the balloons to pop them and reveal sweet messages! 💖
+                Click on the hearts to pop them and reveal sweet messages! 💖
               </motion.p>
             </motion.div>
           )}
